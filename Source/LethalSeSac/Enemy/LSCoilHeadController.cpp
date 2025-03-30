@@ -11,6 +11,7 @@
 #include "LSCoilHeadFSM.h"
 #include "NavigationSystem.h"
 #include "LSCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 ALSCoilHeadController::ALSCoilHeadController()
 {
@@ -37,6 +38,16 @@ ALSCoilHeadController::ALSCoilHeadController()
 void ALSCoilHeadController::BeginPlay()
 {
     Super::BeginPlay();
+
+    AActor* PlayerActor = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+    if (PlayerActor)
+    {
+        target = Cast<ALSCharacter>(PlayerActor);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("타겟을 찾을 수 없습니다."));
+    }
 }
 
 void ALSCoilHeadController::PerceptionUpdated(const TArray<AActor*>& UpdatedActors)
@@ -54,13 +65,22 @@ void ALSCoilHeadController::PerceptionUpdated(const TArray<AActor*>& UpdatedActo
             {
                 if (UAIPerceptionSystem::GetSenseClassForStimulus(this, Stimulus) == UAISense_Sight::StaticClass())
                 {
-                    if (Stimulus.WasSuccessfullySensed())
+                    /*if (Stimulus.WasSuccessfullySensed())
                     {
                         coilHeadFSM->mState = ECoilHeadState::LookAtMe;
                     }
                     else
                     {
                         coilHeadFSM->mState = ECoilHeadState::Patrol;
+                    }*/
+                    ALSCoilHead* enemy = Cast<ALSCoilHead>(GetCharacter());
+                    if (enemy)
+                    {
+                        ULSCoilHeadFSM* FSM = enemy->FindComponentByClass<ULSCoilHeadFSM>();
+                        if (FSM)
+                        {
+                            FSM->LookAtMeState();
+                        }
                     }
                 }
             }
@@ -71,7 +91,7 @@ void ALSCoilHeadController::PerceptionUpdated(const TArray<AActor*>& UpdatedActo
 
 bool ALSCoilHeadController::IsPlayerLookAtMe()
 {
-	if (!CoilHead || !target)
+	if (!target)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("CoilHead or Target is NULL!"));
 		return false;
@@ -86,7 +106,7 @@ bool ALSCoilHeadController::IsPlayerLookAtMe()
 		{
 			if (Stimulus.WasSuccessfullySensed())
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Player is looking at CoilHead!"));
+				UE_LOG(LogTemp, Warning, TEXT("보고있다~~~"));
 				return true;
 			}
 		}

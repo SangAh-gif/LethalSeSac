@@ -85,4 +85,6 @@ public:
 	void LookAtMeState();
 
 	bool GetRandomPositionInNavMesh(FVector centerLocation, float radius, FVector& dest);
+
+	bool bIsPlayerLooking = false;
 };

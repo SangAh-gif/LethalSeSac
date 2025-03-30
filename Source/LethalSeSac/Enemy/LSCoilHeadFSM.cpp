@@ -53,11 +53,9 @@ void ULSCoilHeadFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	FString logMsg = UEnum::GetValueAsString(mState);
 	GEngine->AddOnScreenDebugMessage(0, 1, FColor::Blue, logMsg);
 
-	if (ai && ai->IsPlayerLookAtMe())
-	{
-		mState = ECoilHeadState::LookAtMe;
-		return;
-	}
+	bIsPlayerLooking = ai->IsPlayerLookAtMe();
+
+
 
 	switch (mState)
 	{
@@ -111,7 +109,18 @@ void ULSCoilHeadFSM::AttackState()
 
 void ULSCoilHeadFSM::LookAtMeState()
 {
-	if (ai->IsPlayerLookAtMe())
+	if (bIsPlayerLooking)
+	{
+		me->GetCharacterMovement()->StopMovementImmediately();
+		mState = ECoilHeadState::Idle;
+	}
+	else
+	{
+		mState = ECoilHeadState::Move;
+		ai->MoveToLocation(target->GetActorLocation());
+	}
+
+	/*if (ai->IsPlayerLookAtMe())
 	{
 		me->GetCharacterMovement()->StopMovementImmediately();
 		mState = ECoilHeadState::Idle;
@@ -122,7 +131,7 @@ void ULSCoilHeadFSM::LookAtMeState()
 
 		FVector PlayerLocation = target->GetActorLocation();
 		ai->MoveToLocation(PlayerLocation);
-	}
+	}*/
 }
 
 bool ULSCoilHeadFSM::GetRandomPositionInNavMesh(FVector centerLocation, float radius, FVector& dest)
