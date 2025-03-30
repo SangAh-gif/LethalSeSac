@@ -76,9 +76,9 @@ public:
 public:
 	void IdleState();
 
-	void MoveState();
-
 	void PatrolState();
+
+	void MoveState();
 
 	void AttackState();
 

@@ -55,7 +55,6 @@ void ALSEyelessDog::Tick(float DeltaTime)
 void ALSEyelessDog::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
 void ALSEyelessDog::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -67,6 +66,5 @@ void ALSEyelessDog::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAc
 			Player->Die();
 		}
 	}
-	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::Printf(TEXT("Overlap %s")));
 }
 

@@ -11,6 +11,7 @@
 #include "AIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Navigation/PathFollowingComponent.h"
+#include "Camera/CameraComponent.h"
 
 // Sets default values for this component's properties
 ULSCoilHeadFSM::ULSCoilHeadFSM()
@@ -52,6 +53,12 @@ void ULSCoilHeadFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	FString logMsg = UEnum::GetValueAsString(mState);
 	GEngine->AddOnScreenDebugMessage(0, 1, FColor::Blue, logMsg);
 
+	if (ai && ai->IsPlayerLookAtMe())
+	{
+		mState = ECoilHeadState::LookAtMe;
+		return;
+	}
+
 	switch (mState)
 	{
 	case ECoilHeadState::Idle:     { IdleState();     } break;
@@ -59,8 +66,6 @@ void ULSCoilHeadFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	case ECoilHeadState::Attack:   { AttackState();   } break;
 	case ECoilHeadState::Move:     { MoveState();     } break;
 	case ECoilHeadState::LookAtMe: { LookAtMeState(); } break;
-		default:
-			break;
 	}
 }
 
@@ -77,10 +82,6 @@ void ULSCoilHeadFSM::IdleState()
 	}
 }	
 
-void ULSCoilHeadFSM::MoveState()
-{
-}
-
 void ULSCoilHeadFSM::PatrolState()
 {
 	me->GetCharacterMovement()->MaxWalkSpeed = 200.0f;
@@ -89,17 +90,39 @@ void ULSCoilHeadFSM::PatrolState()
 	{
 		GetRandomPositionInNavMesh(me->GetActorLocation(), 1000.0f, randomPos);
 	}
-		
+}
+
+void ULSCoilHeadFSM::MoveState()
+{
+	me->GetCharacterMovement()->MaxWalkSpeed = 1000.0f;
+	if (target)
+	{
+		ai->MoveToLocation(target->GetActorLocation());
+	}
 }
 
 void ULSCoilHeadFSM::AttackState()
 {
-
+	if (target && FVector::Dist(me->GetActorLocation(), target->GetActorLocation()) < 100.0f)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Hit"));
+	}
 }
 
 void ULSCoilHeadFSM::LookAtMeState()
 {
+	if (ai->IsPlayerLookAtMe())
+	{
+		me->GetCharacterMovement()->StopMovementImmediately();
+		mState = ECoilHeadState::Idle;
+	}
+	else
+	{
+		mState = ECoilHeadState::Move;
 
+		FVector PlayerLocation = target->GetActorLocation();
+		ai->MoveToLocation(PlayerLocation);
+	}
 }
 
 bool ULSCoilHeadFSM::GetRandomPositionInNavMesh(FVector centerLocation, float radius, FVector& dest)
