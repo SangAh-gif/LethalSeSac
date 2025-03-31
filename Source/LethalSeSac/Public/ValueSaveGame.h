@@ -13,7 +13,7 @@ UCLASS()
 class LETHALSESAC_API UValueSaveGame : public ULocalPlayerSaveGame
 {
 	GENERATED_BODY()
-	
+
 public:
 	UPROPERTY(BlueprintReadWrite, Category = "Default|SaveGame")
 	bool bInSpace;
@@ -23,12 +23,4 @@ public:
 	int32 TotValueSave;
 	UPROPERTY(BlueprintReadWrite, Category = "Default|SaveGame")
 	int32 QuotaSave;
-	UPROPERTY(BlueprintReadWrite, Category = "Default|SaveGame")
-	bool DefaultbInSpace = true;
-	UPROPERTY(BlueprintReadWrite, Category = "Default|SaveGame")
-	int32 DefaultCurGameDay = 1;
-	UPROPERTY(BlueprintReadWrite, Category = "Default|SaveGame")
-	int32 DefaultTotValueSave = 0;
-	UPROPERTY(BlueprintReadWrite, Category = "Default|SaveGame")
-	int32 DefaultQuotaSave = 200;
 };

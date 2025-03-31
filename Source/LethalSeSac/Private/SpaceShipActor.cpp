@@ -6,6 +6,7 @@
 #include "Components/SceneComponent.h"
 #include "ItemBase.h"
 
+
 // Sets default values
 ASpaceShipActor::ASpaceShipActor()
 {

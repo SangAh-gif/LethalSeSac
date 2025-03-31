@@ -4,10 +4,23 @@
 #include "LSGameModeBase.h"
 #include "ValueSaveGame.h"
 #include "Kismet/GameplayStatics.h"
+#include "LeverActor.h"
+#include "SpaceShipActor.h"
 
 void ALSGameModeBase::BeginPlay()
 {
 	LoadGameData();
+	ALeverActor* Lever = Cast<ALeverActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ALeverActor::StaticClass()));
+	ASpaceShipActor* SpaceShip = Cast<ASpaceShipActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ASpaceShipActor::StaticClass()));
+	if (Lever)
+	{
+		Lever->bInSpace = bInSpace;
+	}
+	if (SpaceShip)
+	{
+		SpaceShip->totVal = TotValue;
+		SpaceShip->Quota = Quota;
+	}
 	if (bInSpace) 
 	{
 		if (GameDay <= 0)
@@ -15,7 +28,7 @@ void ALSGameModeBase::BeginPlay()
 			ResetGameData();
 		}
 	}
-	LoadGameData();
+	
 }
 
 void ALSGameModeBase::SaveGameData()
@@ -46,17 +59,9 @@ void ALSGameModeBase::LoadGameData()
 
 void ALSGameModeBase::ResetGameData()
 {
-	bool sgExist = UGameplayStatics::DoesSaveGameExist(SaveSlotName, UserIndex);
-
-	if (!sgExist) return;
-
-	UValueSaveGame* sg = Cast<UValueSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, UserIndex));
-
-	if (!sg) return;
-
-	sg->TotValueSave = sg->DefaultTotValueSave;
-	sg->bInSpace = sg->DefaultbInSpace;
-	sg->CurGameDay = sg->DefaultCurGameDay;
+	TotValue = DefaultTotValueSave;
+	bInSpace = bDefaultInSpace;
+	GameDay = DefaultCurGameDay;
 
 	SaveGameData();
 }

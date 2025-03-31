@@ -29,6 +29,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bInSpace = true;
 
+	UPROPERTY(BlueprintReadWrite, Category = "Default|SaveGame")
+	int32 DefaultCurGameDay = 1;
+	UPROPERTY(BlueprintReadWrite, Category = "Default|SaveGame")
+	int32 DefaultTotValueSave = 0;
+	UPROPERTY(BlueprintReadWrite, Category = "Default|SaveGame")
+	bool bDefaultInSpace = true;
+	UPROPERTY(BlueprintReadWrite, Category = "Default|SaveGame")
+	int32 DefaultQuotaSave = 200;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString SaveSlotName = TEXT("SaveValue");
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

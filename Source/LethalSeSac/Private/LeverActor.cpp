@@ -36,7 +36,6 @@ void ALeverActor::BeginPlay()
 {
 	Super::BeginPlay();
 	GM = Cast<ALSGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
-	bInSpace = GM->bInSpace;
 }
 
 // Called every frame
