@@ -48,8 +48,8 @@ public:
 	class ALSEyelessDog* me;
 
 	UPROPERTY()
-	//class AAIController* ai;
 	class ALSEyelessDogAIController* ai;
+	//class AAIController* ai;
 
 public:
 	// 길찾기 수행시 랜덤위치 

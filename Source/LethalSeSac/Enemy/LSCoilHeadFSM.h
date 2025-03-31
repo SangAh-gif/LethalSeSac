@@ -10,9 +10,9 @@ UENUM(BlueprintType)
 enum class ECoilHeadState : uint8
 {
 	Idle,
+	Move,
 	Patrol,
 	Attack,
-	Move,
 	LookAtMe
 };
 
@@ -41,7 +41,7 @@ public:
 	UPROPERTY();
 	class ULSCoilHeadAnim* Anim;
 
-	UPROPERTY();
+	UPROPERTY(VisibleAnywhere, Category = FSM);
 	class ALSCharacter* target;
 
 	UPROPERTY();
@@ -49,6 +49,8 @@ public:
 
 	UPROPERTY();
 	class ALSCoilHeadController* ai;
+	//class AAIController* ai;
+
 
 public:
 	FVector randomPos; 
@@ -60,7 +62,7 @@ public:
 	float currentTime = 0.0f;
 
 	UPROPERTY(EditAnywhere, Category =FSM)
-	float attackDelayTime = 2.0f;
+	float attackDelayTime = 0.5f;
 
 	UPROPERTY(EditAnywhere, Category = FSM)
 	float damageDelayTime = 2.0f;
@@ -71,6 +73,7 @@ public:
 	UPROPERTY(EditAnywhere, Category =FSM)
 	float  traceRange = 500.0f;
 
+	FTimerHandle AttackTimerHandle;
 
 
 public:
@@ -87,4 +90,7 @@ public:
 	bool GetRandomPositionInNavMesh(FVector centerLocation, float radius, FVector& dest);
 
 	bool bIsPlayerLooking = false;
+
+	bool blooking = false;
+
 };

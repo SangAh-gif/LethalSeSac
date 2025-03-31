@@ -22,5 +22,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = FSM)
 	ECoilHeadState AnimState = ECoilHeadState::Idle;
 
-
+public:
+	bool bAttackPlay = false;
 };

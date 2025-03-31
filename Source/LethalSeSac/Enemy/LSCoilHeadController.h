@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "Perception/AIPerceptionTypes.h"
+#include "Perception/AIPerceptionComponent.h"
 #include "LSCoilHeadController.generated.h"
 
 /**
@@ -36,10 +38,14 @@ public:
 	class UAISenseConfig_Sight* SightConfig;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	class UAISense_Damage* DamageConfig;
+	class UAISenseConfig_Damage* DamageConfig;
 
 	UFUNCTION()
 	void PerceptionUpdated(const TArray<AActor*>& UpdatedActors);
+
+	bool GetActorPerception(AActor* Actor, FActorPerceptionBlueprintInfo& Info);
+
+	bool CanSenseActor(AActor* Actor, enemyAISenseCoilHead AIPerceptionSense);
 
 	bool isDead = false;
 
@@ -47,11 +53,10 @@ public:
 
 	void MoveToRandomLocation();
 
-	UPROPERTY()
-	class ALSCoilHead* CoilHead;
-
-	class ULSCoilHeadFSM* coilHeadFSM;
-
+	UPROPERTY(VisibleAnywhere, Category = FSM)
 	class ALSCharacter* target;
-	
+
+	UPROPERTY()
+	class ALSCoilHead* me;
+
 };

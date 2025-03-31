@@ -2,6 +2,8 @@
 
 
 #include "LSCoilHead.h"
+#include "Components/BoxComponent.h"
+#include "LSCharacter.h"
 
 // Sets default values
 ALSCoilHead::ALSCoilHead()
@@ -10,6 +12,7 @@ ALSCoilHead::ALSCoilHead()
 	PrimaryActorTick.bCanEverTick = true;
 
 	FSM = CreateDefaultSubobject<ULSCoilHeadFSM>(TEXT("FSM"));
+	Tags.Add(FName("CoilHead"));
 
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/SSA/Asset/CoilHead/SKM_Untitled.SKM_Untitled'"));
 
@@ -17,8 +20,18 @@ ALSCoilHead::ALSCoilHead()
 	{
 		GetMesh()->SetSkeletalMesh(tempMesh.Object);
 		GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -84.0f), FRotator(0.0f, -90.0f, 0.0f));
-	}
+	}	
 
+	OverlapBox = CreateDefaultSubobject<UBoxComponent>(TEXT("OverlapBox"));
+	OverlapBox->SetupAttachment(RootComponent);
+
+	OverlapBox->SetBoxExtent(FVector(40.0f, 40.0f, 90.0f));
+	OverlapBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	OverlapBox->SetCollisionObjectType(ECC_WorldDynamic);
+	OverlapBox->SetCollisionResponseToAllChannels(ECR_Ignore);
+	OverlapBox->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Overlap);
+
+	OverlapBox->OnComponentBeginOverlap.AddDynamic(this, &ALSCoilHead::OnOverlapBegin);
 }
 
 // Called when the game starts or when spawned
@@ -40,5 +53,16 @@ void ALSCoilHead::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void ALSCoilHead::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	ALSCharacter* Player = Cast<ALSCharacter>(OtherActor);
+	{
+		if (Player)
+		{
+			Player->Die();
+		}
+	}
 }
 
