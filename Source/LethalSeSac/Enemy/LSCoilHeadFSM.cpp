@@ -95,15 +95,22 @@ void ULSCoilHeadFSM::IdleState()
 
 void ULSCoilHeadFSM::MoveState()
 {
-	FVector desttination = target->GetActorLocation();
-
-	if (!target)
+	if (bIsPlayerLooking)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Target is null"));
+		mState = ECoilHeadState::LookAtMe;
+		me->GetCharacterMovement()->StopMovementImmediately();
+		ai->StopMovement();
+		Anim->AnimState = mState;
+		me->bUseControllerRotationYaw = false;
+		return;
 	}
+
+	FVector desttination = target->GetActorLocation();
 
 	// ¹æÇâ 
 	FVector dir = desttination - me->GetActorLocation();
+
+	me->GetCharacterMovement()->MaxWalkSpeed = 1500.0f;
 
 	auto ns = UNavigationSystemV1::GetNavigationSystem(GetWorld());
 

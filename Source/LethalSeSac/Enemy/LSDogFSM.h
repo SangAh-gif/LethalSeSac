@@ -100,4 +100,15 @@ public:
 	void OnDamageProcess(int damage);
 
 	void SetNoiseLocation(FVector NewLocation);
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category = Sound )
+	class USoundBase* DogPtrolSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = Sound )
+	class USoundBase* DogMoveSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = Sound )
+	class USoundBase* DogAttackSound;
+
 };
