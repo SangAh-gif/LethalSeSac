@@ -14,6 +14,9 @@
 #include "LSGameModeBase.h"
 #include "SpaceShipActor.h"
 #include "LeverActor.h"
+#include "Engine/SkyLight.h"
+#include "Components/SkyLightComponent.h"
+#include "DoorActor.h"
 
 // Sets default values
 ALSCharacter::ALSCharacter()
@@ -223,6 +226,14 @@ void ALSCharacter::Interact()
 			if (lever)
 			{
 				lever->InteractLever();
+				break;
+			}
+
+			ADoorActor* door = Cast<ADoorActor>(HitInfo.GetActor());
+			if (door)
+			{
+				door->OpenDoor();
+				break;
 			}
 		}
 			
@@ -294,13 +305,15 @@ bool ALSCharacter::drawInteractLine(TArray<FHitResult>& HitInfos)
 void ALSCharacter::Die()
 {
 	bIsDead = true;
-	EndGame();
+	ASpaceShipActor* SpaceShip = Cast<ASpaceShipActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ASpaceShipActor::StaticClass()));
 	APlayerController* pc = Cast<APlayerController>(Controller);
-	if (pc)
+	pc->SetViewTarget(SpaceShip);
+	SpaceShip->AfterEnd();
+	/*if (pc)
 	{
 		pc->SetPause(true);
 		pc->bShowMouseCursor = true;
-	}
+	}*/
 }
 
 void ALSCharacter::WalkSound(float loudness)
@@ -338,6 +351,11 @@ void ALSCharacter::Scan()
 	FVector CurPos = GetActorLocation();
 	FCollisionQueryParams params;
 	params.AddIgnoredActor(this);
+	for (int i = 0; i < ItemArray.Num(); ++i)
+	{
+		if (ItemArray[i])
+			params.AddIgnoredActor(ItemArray[i]);
+	}
 	bool bHit = GetWorld()->SweepMultiByChannel(HitInfos, CurPos, CurPos, FQuat::Identity, ECC_Visibility, FCollisionShape::MakeSphere(ScanDist),params);
 	if (bHit)
 	{

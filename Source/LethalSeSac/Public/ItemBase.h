@@ -41,7 +41,7 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	int32 curVal = 0;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	class UImage* Img;
+	class UTexture2D* Img;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	class AItemInfoActor* ItemInfoAct;
 	

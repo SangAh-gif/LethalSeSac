@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "DoorActor.generated.h"
+#include "ItemSpawner.generated.h"
 
 UCLASS()
-class LETHALSESAC_API ADoorActor : public AActor
+class LETHALSESAC_API AItemSpawner : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ADoorActor();
+	AItemSpawner();
 
 protected:
 	// Called when the game starts or when spawned
@@ -24,11 +24,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bIsOutSide = true;
-
-	void OpenDoor();
-
+	class USceneComponent* scene;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UBoxComponent* BoxComp;
+	TArray<TSubclassOf<class AItemBase>> ItemList;
 };

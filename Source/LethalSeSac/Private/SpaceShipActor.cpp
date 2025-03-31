@@ -5,6 +5,10 @@
 #include "Components/BoxComponent.h"
 #include "Components/SceneComponent.h"
 #include "ItemBase.h"
+#include "LSCharacter.h"
+#include "Kismet/GameplayStatics.h"
+#include "LeverActor.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 
 // Sets default values
@@ -38,6 +42,36 @@ void ASpaceShipActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ASpaceShipActor::AfterEnd()
+{
+	ALSCharacter* player = Cast<ALSCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(),0));
+	ALeverActor* Lever = Cast<ALeverActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ALeverActor::StaticClass()));
+	player->AttachToComponent(CheckItemComp, FAttachmentTransformRules::KeepWorldTransform);
+	//player->GetCharacterMovement()->DisableMovement();
+	Lever->AttachToComponent(RootComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+			FVector CurPos = GetActorLocation();
+	GetWorld()->GetTimerManager().SetTimer(EndingTimer, FTimerDelegate::CreateLambda([this,CurPos]()
+		{
+			FVector EndPos = FVector(-22720, -7250, 7800);
+			CurTime += 0.02;
+			FVector NCurPos = FMath::Lerp(CurPos, EndPos, FMath::Pow(CurTime/boardTime,3));
+			SetActorLocation(NCurPos,true);
+			if (CurTime >= boardTime)
+			{
+				SetActorLocation(EndPos);
+				GetWorldTimerManager().ClearTimer(EndingTimer);
+				ALSCharacter * player = Cast<ALSCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+				if (player)
+				{
+					player->EndGame();
+				}
+			}
+		}), 0.02,true);
+
+
+	
 }
 
 void ASpaceShipActor::OnSpaceShipOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

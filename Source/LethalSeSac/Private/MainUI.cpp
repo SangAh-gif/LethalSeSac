@@ -3,3 +3,7 @@
 
 #include "MainUI.h"
 
+void UMainUI::SetItemList(TArray<class AItemBase> ItemArr)
+{
+
+}

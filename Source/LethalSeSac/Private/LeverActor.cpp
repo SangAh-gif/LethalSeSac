@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "LSGameModeBase.h"
 #include "LSCharacter.h"
+#include "SpaceShipActor.h"
 
 // Sets default values
 ALeverActor::ALeverActor()
@@ -55,6 +56,8 @@ void ALeverActor::InteractLever()
 	}
 	else
 	{
+		//ASpaceShipActor* SpaceShip = Cast<ASpaceShipActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ASpaceShipActor::StaticClass()));
+		//SpaceShip->AfterEnd();
 		ALSCharacter* player = Cast<ALSCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 		player->EndGame();
 	}
