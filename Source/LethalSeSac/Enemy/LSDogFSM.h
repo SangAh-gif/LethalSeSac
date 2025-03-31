@@ -11,13 +11,10 @@ enum class EEnemyState : uint8
 {
 	Idle,
 	Move,
-	MoveToSound,
 	Attack,
 	Damage,
 	Die,
 	Patrol,
-	ReturnToPatrol,
-	DetectSound
 };
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
@@ -88,8 +85,6 @@ public:
 	void IdleState();
 
 	void MoveState();
-	
-	void MoveToSoundState();
 
 	void AttackState();
 
@@ -104,10 +99,5 @@ public:
 
 	void OnDamageProcess(int damage);
 
-	//
-	void ReturnToPatrolState();
-
 	void SetNoiseLocation(FVector NewLocation);
-	void DetectSoundState();
-
 };

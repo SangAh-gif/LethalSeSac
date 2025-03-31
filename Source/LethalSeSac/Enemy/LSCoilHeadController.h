@@ -41,12 +41,17 @@ public:
 	UFUNCTION()
 	void PerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 
-	bool CanSenseActor(AActor* actor, enemyAISenseCoilHead AIPerceptionSense);
-
 	bool isDead = false;
 
-	void OnPlayerLookedAtAI();
+	bool IsPlayerLookAtMe();
 
-	class LSCoilHeadFSM* coilHeadFSM;
+	void MoveToRandomLocation();
+
+	UPROPERTY()
+	class ALSCoilHead* CoilHead;
+
+	class ULSCoilHeadFSM* coilHeadFSM;
+
+	class ALSCharacter* target;
 	
 };

@@ -30,10 +30,17 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	class ULSDogFSM* FSM;
 
-	
-
 	bool Damaged = true; 
 
 public:
+	UPROPERTY(VisibleAnywhere, Category = "Collision")
+	class UBoxComponent* OverlapBox;
 
+	UFUNCTION()
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
+						AActor* OtherActor,
+						UPrimitiveComponent* OtherComp,
+						int32 OtherBodyIndex,
+						bool bFromSweep,
+						const FHitResult& SweepResult);
 };

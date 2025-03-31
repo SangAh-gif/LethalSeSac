@@ -2,4 +2,9 @@
 
 
 #include "LSCoilHeadAnim.h"
+#include "LSCoilHead.h"
 
+ULSCoilHeadAnim::ULSCoilHeadAnim()
+{
+
+}

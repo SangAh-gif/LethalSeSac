@@ -57,5 +57,5 @@ public:
 
 	bool bHearNoise = false;
 
-	class LSDogFSM* dogFSM;
+	class ULSDogFSM* dogFSM;
 };
