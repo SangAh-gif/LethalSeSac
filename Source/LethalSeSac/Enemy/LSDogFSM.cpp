@@ -123,7 +123,7 @@ void ULSDogFSM::SetNoiseLocation(FVector NewLocation)
 
 void ULSDogFSM::MoveState()
 {
-	//UGameplayStatics::PlaySoundAtLocation(GetWorld(), DogMoveSound, me->GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DogMoveSound, me->GetActorLocation());
 
 	if (UKismetMathLibrary::EqualEqual_VectorVector(NoiseLocation, me->GetActorLocation(), 0.00001f))
 	{
