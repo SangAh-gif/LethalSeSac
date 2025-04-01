@@ -25,7 +25,7 @@ ALSCoilHead::ALSCoilHead()
 	OverlapBox = CreateDefaultSubobject<UBoxComponent>(TEXT("OverlapBox"));
 	OverlapBox->SetupAttachment(RootComponent);
 
-	OverlapBox->SetBoxExtent(FVector(40.0f, 40.0f, 90.0f));
+	OverlapBox->SetBoxExtent(FVector(40.0f, 40.0f, 70.0f));
 	OverlapBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	OverlapBox->SetCollisionObjectType(ECC_WorldDynamic);
 	OverlapBox->SetCollisionResponseToAllChannels(ECR_Ignore);
