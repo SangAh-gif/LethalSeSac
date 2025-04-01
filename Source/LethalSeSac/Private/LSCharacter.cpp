@@ -119,6 +119,10 @@ ALSCharacter::ALSCharacter()
 	{
 		IA_Scan = TempIA_Scan.Object;
 	}
+
+	ConstructorHelpers::FObjectFinder<USoundBase> TempWalkSound(TEXT("/Script/Engine.SoundCue'/Game/KHH/Sound/SC_Walk.SC_Walk'"));
+	if (TempWalkSound.Succeeded())
+		walkSound = TempWalkSound.Object;
 }
 
 // Called when the game starts or when spawned
@@ -374,6 +378,7 @@ void ALSCharacter::WalkSound(float loudness)
 {
 	MakeNoise(loudness, this, GetActorLocation());
 	//UE_LOG(LogTemp,Warning,TEXT("WALKSOUND!"));
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), walkSound, GetActorLocation());
 	CurSoundTime = 0.0f;
 }
 

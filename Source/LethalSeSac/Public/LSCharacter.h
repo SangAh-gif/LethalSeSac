@@ -146,4 +146,7 @@ public: // 이동 및 회전
 
 	UPROPERTY(VisibleAnywhere)
 	class UChildActorComponent* WidgetComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = Sound )
+	class USoundBase* walkSound;
 };
