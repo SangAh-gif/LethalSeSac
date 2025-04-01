@@ -90,6 +90,7 @@ public: // 이동 및 회전
 	void EndGame();
 	void WinGame();
 
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float RunSpeed = 1000;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -140,5 +141,9 @@ public: // 이동 및 회전
 
 	bool bIsDead = false;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AActor> WidgetActor;
 
+	UPROPERTY(VisibleAnywhere)
+	class UChildActorComponent* WidgetComp;
 };
