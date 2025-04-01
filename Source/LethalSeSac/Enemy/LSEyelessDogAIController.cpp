@@ -75,7 +75,6 @@ void ALSEyelessDogAIController::PerceptionUpdated(const TArray<AActor*>& Updated
 			}
 		}
 	}
-	
 }
 
 bool ALSEyelessDogAIController::CanSenseActor(AActor* actor, enemyAISenseEyelessDog AIPerceptionSense)
