@@ -19,14 +19,14 @@ ALSEyelessDog::ALSEyelessDog()
 	if (tempMesh.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(tempMesh.Object);
-		GetMesh()->SetRelativeLocationAndRotation(FVector(-10.0f, 0.0f, -92.0f), FRotator(0.0f, -90.0f, 0.0f));
+		GetMesh()->SetRelativeLocationAndRotation(FVector(-40.0f, 0.0f, -92.0f), FRotator(0.0f, -90.0f, 0.0f));
 		GetMesh()->SetRelativeScale3D(FVector(0.05f));
 	}
 
 	OverlapBox = CreateDefaultSubobject<UBoxComponent>(TEXT("OverlapBox"));
 	OverlapBox->SetupAttachment(RootComponent);
 
-	OverlapBox->SetBoxExtent(FVector(120.0f, 100.0f, 100.0f));
+	OverlapBox->SetBoxExtent(FVector(170.0f, 100.0f, 100.0f));
 	OverlapBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	OverlapBox->SetCollisionObjectType(ECC_WorldDynamic);
 	OverlapBox->SetCollisionResponseToChannels(ECR_Ignore);

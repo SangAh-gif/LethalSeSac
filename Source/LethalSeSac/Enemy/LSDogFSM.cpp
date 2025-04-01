@@ -22,6 +22,18 @@ ULSDogFSM::ULSDogFSM()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+	ConstructorHelpers::FObjectFinder<USoundBase> TempAttackSound(TEXT("/Script/Engine.SoundCue'/Game/SSA/Sound/crow_Cue.crow_Cue'"));
+	if (TempAttackSound.Succeeded())
+		DogAttackSound = TempAttackSound.Object;
+
+	ConstructorHelpers::FObjectFinder<USoundBase> TempMoveSound(TEXT("/Script/Engine.SoundCue'/Game/SSA/Sound/attack_Cue.attack_Cue'"));
+	if (TempMoveSound.Succeeded())
+		DogMoveSound = TempMoveSound.Object;
+
+	ConstructorHelpers::FObjectFinder<USoundBase> TempPtrolSound(TEXT("/Script/Engine.SoundCue'/Game/SSA/Sound/dog_Cue.dog_Cue'"));
+	if (TempPtrolSound.Succeeded())
+		DogPtrolSound = TempPtrolSound.Object;
+
 	// ...
 }
 
@@ -111,6 +123,8 @@ void ULSDogFSM::SetNoiseLocation(FVector NewLocation)
 
 void ULSDogFSM::MoveState()
 {
+	UGameplayStatics::PlaySound2D(GetWorld(), DogMoveSound);
+
 	if (UKismetMathLibrary::EqualEqual_VectorVector(NoiseLocation, me->GetActorLocation(), 0.00001f))
 	{
 		IdleState();
@@ -172,6 +186,8 @@ void ULSDogFSM::AttackState()
 	
 		currentTime = 0.0f;
 		Anim->bAttackPlay = true;
+		UGameplayStatics::PlaySound2D(GetWorld(), DogAttackSound);
+
 	}
 	else
 	{
@@ -216,6 +232,7 @@ void ULSDogFSM::PatrolState()
 	if (result == EPathFollowingRequestResult::AlreadyAtGoal)
 	{
 		GetRandomPositionInNavMesh(me->GetActorLocation(), 1000.0f, randomPos);
+		UGameplayStatics::PlaySound2D(GetWorld(), DogPtrolSound);
 	}
 }
 

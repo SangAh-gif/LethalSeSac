@@ -48,8 +48,8 @@ public:
 	class ALSEyelessDog* me;
 
 	UPROPERTY()
-	//class AAIController* ai;
 	class ALSEyelessDogAIController* ai;
+	//class AAIController* ai;
 
 public:
 	// 길찾기 수행시 랜덤위치 
@@ -100,4 +100,15 @@ public:
 	void OnDamageProcess(int damage);
 
 	void SetNoiseLocation(FVector NewLocation);
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category = Sound )
+	class USoundBase* DogPtrolSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = Sound )
+	class USoundBase* DogMoveSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = Sound )
+	class USoundBase* DogAttackSound;
+
 };
