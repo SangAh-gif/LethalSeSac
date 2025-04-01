@@ -199,7 +199,7 @@ void ULSCoilHeadFSM::LookAtMeState()
 		mState = ECoilHeadState::Move;
 		ai->MoveToLocation(target->GetActorLocation());
 		me->bUseControllerRotationYaw = true;
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), CoilHeadMoveSound, me->GetActorLocation());
+		//UGameplayStatics::PlaySoundAtLocation(GetWorld(), CoilHeadMoveSound, me->GetActorLocation());
 	}
 }
 
