@@ -21,6 +21,8 @@
 #include "Components/WidgetInteractionComponent.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/Actor.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ALSCharacter::ALSCharacter()
@@ -46,6 +48,14 @@ ALSCharacter::ALSCharacter()
 
 	scene = CreateDefaultSubobject<USceneComponent>(TEXT("scene"));
 	scene->SetupAttachment(RightHand);
+
+	WidgetComp = CreateDefaultSubobject<UChildActorComponent>(TEXT("WidgetComp"));
+	WidgetComp->SetupAttachment(RootComponent);
+	ConstructorHelpers::FClassFinder<AActor> TempWidget(TEXT("/Script/Engine.Blueprint'/Game/KHH/Widgets/BP_EndUI.BP_EndUI'"));
+	if (TempWidget.Succeeded())
+	{
+		WidgetComp->SetChildActorClass(TempWidget.Class);
+	}
 
 	WidgetInteractionComp = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("WidgetInteractionComp"));
 	WidgetInteractionComp->SetupAttachment(RightAim);
@@ -285,7 +295,8 @@ void ALSCharacter::Throw()
 void ALSCharacter::ChangeItem(const struct FInputActionValue& val)
 {
 	int32 preIndex = SelectedIndex;
-	SelectedIndex += (int32)val.Get<float>();
+	if(val.Get<float>() > 0.95)
+	SelectedIndex += 1;
 	SelectedIndex = SelectedIndex < 0 ? 3 : SelectedIndex;
 	SelectedIndex %= 4;
 	UE_LOG(LogTemp, Warning, TEXT("%d"), SelectedIndex);
@@ -347,7 +358,9 @@ void ALSCharacter::Die()
 {
 	bIsDead = true;
 	ASpaceShipActor* SpaceShip = Cast<ASpaceShipActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ASpaceShipActor::StaticClass()));
+	ASkyLight* skyLight = Cast<ASkyLight>(UGameplayStatics::GetActorOfClass(GetWorld(), ASkyLight::StaticClass()));
 	APlayerController* pc = Cast<APlayerController>(Controller);
+	skyLight->GetLightComponent()->SetVisibility(true);
 	pc->SetViewTarget(SpaceShip);
 	SpaceShip->AfterEnd();
 	/*if (pc)
@@ -435,24 +448,33 @@ void ALSCharacter::EndGame()
 
 void ALSCharacter::WinGame()
 {
-	if (!bSucceed)
-	{
+	//if (!bSucceed)
+	//{
 		GetCapsuleComponent()->SetSimulatePhysics(true);
 		GetCharacterMovement()->GravityScale = 0;
 		GetCapsuleComponent()->AddImpulse(GetActorRightVector() * -500000);
 		//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	}
+	//}
 	GetWorld()->GetTimerManager().SetTimer(EndingTimer, FTimerDelegate::CreateLambda(
 		[this]()
 		{
 			CurEndingTime += GetWorld()->DeltaTimeSeconds;
 			if (CurEndingTime >= EndingTime)
 			{
-				UGameplayStatics::SetGamePaused(GetWorld(), true);
 				GetWorldTimerManager().ClearTimer(EndingTimer);
 				CurEndingTime = 0;
+
+				GetCapsuleComponent()->SetSimulatePhysics(false);
+				GetCharacterMovement()->StopMovementImmediately();
+				FVector spawnLoc = VRCamera->GetComponentLocation() + VRCamera->GetForwardVector() * 1500;
+				auto widget = GetWorld()->SpawnActor<AActor>(WidgetActor, spawnLoc, FRotator(0, 180, 0));
+				widget->AttachToComponent(VRCamera,FAttachmentTransformRules::KeepWorldTransform);
+				widget->SetActorRelativeRotation(FRotator(0, 180, 0));
+				widget->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 			}
 		}), 0.02f, true);
 
+
 }
+
