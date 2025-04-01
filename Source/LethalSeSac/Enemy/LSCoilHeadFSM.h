@@ -93,4 +93,12 @@ public:
 
 	bool blooking = false;
 
+	
+public:
+	UPROPERTY(EditDefaultsOnly, Category = Sound )
+	class USoundBase* CoilHeadStopSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = Sound )
+	class USoundBase* CoilHeadMoveSound;
+
 };

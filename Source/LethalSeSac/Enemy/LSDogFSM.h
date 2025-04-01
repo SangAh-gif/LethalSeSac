@@ -64,6 +64,9 @@ public:
 	UPROPERTY(EditAnywhere, Category =FSM)
 	float attackDelayTime = 2.0f;
 
+	UPROPERTY(EditAnywhere, Category = Sound)
+	float SoundDelayTime = 5.0f;
+
 	UPROPERTY(EditAnywhere, Category = FSM)
 	float damageDelayTime = 2.0f;
 

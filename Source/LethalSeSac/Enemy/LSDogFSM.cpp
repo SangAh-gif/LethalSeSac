@@ -123,7 +123,7 @@ void ULSDogFSM::SetNoiseLocation(FVector NewLocation)
 
 void ULSDogFSM::MoveState()
 {
-	UGameplayStatics::PlaySound2D(GetWorld(), DogMoveSound);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DogMoveSound, me->GetActorLocation());
 
 	if (UKismetMathLibrary::EqualEqual_VectorVector(NoiseLocation, me->GetActorLocation(), 0.00001f))
 	{
@@ -183,11 +183,12 @@ void ULSDogFSM::AttackState()
 
 	if (currentTime > attackDelayTime)
 	{
-	
 		currentTime = 0.0f;
 		Anim->bAttackPlay = true;
-		UGameplayStatics::PlaySound2D(GetWorld(), DogAttackSound);
-
+		if (currentTime > SoundDelayTime)
+		{
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), DogAttackSound, me->GetActorLocation());
+		}
 	}
 	else
 	{
@@ -202,6 +203,7 @@ void ULSDogFSM::AttackState()
 			GetRandomPositionInNavMesh(me->GetActorLocation(), 500.0f, randomPos);
 		}
 	}
+
 }
 
 
@@ -232,7 +234,7 @@ void ULSDogFSM::PatrolState()
 	if (result == EPathFollowingRequestResult::AlreadyAtGoal)
 	{
 		GetRandomPositionInNavMesh(me->GetActorLocation(), 1000.0f, randomPos);
-		UGameplayStatics::PlaySound2D(GetWorld(), DogPtrolSound);
+		//UGameplayStatics::PlaySoundAtLocation(GetWorld(), DogPtrolSound, me->GetActorLocation());
 	}
 }
 
@@ -247,6 +249,8 @@ bool ULSDogFSM::GetRandomPositionInNavMesh(FVector centerLocation, float radius,
 
 	return result; 
 }
+
+
 
 void ULSDogFSM::OnDamageProcess(int damage)
 {
@@ -264,4 +268,3 @@ void ULSDogFSM::OnDamageProcess(int damage)
 		me->PlayAnimMontage(Anim->EnemyMongtage, 1.0f, TEXT("Die"));
 	}
 }
-

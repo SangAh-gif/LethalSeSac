@@ -22,7 +22,14 @@ ULSCoilHeadFSM::ULSCoilHeadFSM()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+	// ...1
+	ConstructorHelpers::FObjectFinder<USoundBase> TempCoilSound(TEXT("/Script/Engine.SoundCue'/Game/SSA/Sound/CoilHead_Cue.CoilHead_Cue'"));
+	if (TempCoilSound.Succeeded())
+		CoilHeadStopSound = TempCoilSound.Object;
+	
+	ConstructorHelpers::FObjectFinder<USoundBase> TempCoilStopSound(TEXT("/Script/Engine.SoundCue'/Game/SSA/Sound/Coil_Cue.Coil_Cue'"));
+	if (TempCoilSound.Succeeded())
+		CoilHeadStopSound = TempCoilStopSound.Object;
 }
 
 
@@ -185,12 +192,14 @@ void ULSCoilHeadFSM::LookAtMeState()
 		me->GetCharacterMovement()->StopMovementImmediately();
 		me->bUseControllerRotationYaw = false;
 		//mState = ECoilHeadState::Idle;
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), CoilHeadStopSound, me->GetActorLocation());
 	}
 	else
 	{
 		mState = ECoilHeadState::Move;
 		ai->MoveToLocation(target->GetActorLocation());
 		me->bUseControllerRotationYaw = true;
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), CoilHeadMoveSound, me->GetActorLocation());
 	}
 }
 
