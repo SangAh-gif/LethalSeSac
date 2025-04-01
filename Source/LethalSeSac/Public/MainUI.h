@@ -17,5 +17,7 @@ class LETHALSESAC_API UMainUI : public UUserWidget
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<class UTileView> QuickSlot;
+	TObjectPtr<class UWrapBox> QuickSlot;
+
+	void SetItemList(TArray<class AItemBase> ItemArr);
 };

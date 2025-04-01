@@ -31,11 +31,23 @@ public:
 	class UCameraComponent* VRCamera;
 	UPROPERTY(EditAnywhere)
 	class USceneComponent* scene;
+	UPROPERTY(EditAnywhere, Category = "MotionController")
+	class UMotionControllerComponent* LeftHand;
+	UPROPERTY(EditAnywhere, Category = "MotionController")
+	class UMotionControllerComponent* RightHand;
+	UPROPERTY(EditAnywhere, Category = "MotionController")
+	class UMotionControllerComponent* RightAim;
+
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+	class UWidgetInteractionComponent* WidgetInteractionComp;
 
 
 public: // 이동 및 회전
-	UPROPERTY(EditAnywhere, Category = Input)
+	UPROPERTY(EditDefaultsOnly, Category = Input)
 	class UInputMappingContext* IMC_LS;
+
+	UPROPERTY(EditDefaultsOnly, Category = Input)
+	class UInputMappingContext* IMC_Hand;
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	class UInputAction* IA_Move;
@@ -70,11 +82,13 @@ public: // 이동 및 회전
 	void ChangeItem(const struct FInputActionValue& val);
 	void SelectItem(int32 index, int32 preIndex);
 	void Use();
+	void ReleaseUI();
 	bool drawInteractLine(TArray<FHitResult>& HitInfos);
 	void Die();
 	void WalkSound(float loud);
 	void Scan();
 	void EndGame();
+	void WinGame();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float RunSpeed = 1000;
@@ -94,6 +108,8 @@ public: // 이동 및 회전
 	float CurScanTime = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float ScanTime = 1.0f;
+	UPROPERTY(EditAnywhere, Category = "Input")
+	bool bUsingMouse = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bRun = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -107,9 +123,15 @@ public: // 이동 및 회전
 	int32 HP = 100;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Sta = 100;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float CurEndingTime = 0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float EndingTime = 2.0f;
 	bool bIsMoving = false;
+	bool bSucceed = false;
 
 	FTimerHandle ScanTimer;
+	FTimerHandle EndingTimer;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<class AItemBase*> ItemArray;

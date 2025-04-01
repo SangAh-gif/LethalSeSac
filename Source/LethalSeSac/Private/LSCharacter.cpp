@@ -14,6 +14,13 @@
 #include "LSGameModeBase.h"
 #include "SpaceShipActor.h"
 #include "LeverActor.h"
+#include "Engine/SkyLight.h"
+#include "Components/SkyLightComponent.h"
+#include "DoorActor.h"
+#include "MotionControllerComponent.h"
+#include "Components/WidgetInteractionComponent.h"
+#include "HeadMountedDisplayFunctionLibrary.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 ALSCharacter::ALSCharacter()
@@ -25,8 +32,23 @@ ALSCharacter::ALSCharacter()
 	VRCamera->SetupAttachment(RootComponent);
 	VRCamera->SetRelativeLocation(FVector(0,0,50));
 
+	LeftHand = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("LeftHand"));
+	LeftHand->SetTrackingMotionSource(TEXT("Left"));
+	LeftHand->SetupAttachment(RootComponent);
+
+	RightHand = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("RightHand"));
+	RightHand->SetTrackingMotionSource(TEXT("Right"));
+	RightHand->SetupAttachment(RootComponent);
+
+	RightAim = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("RightAim"));
+	RightAim->SetTrackingMotionSource(TEXT("RightAim"));
+	RightAim->SetupAttachment(RootComponent);
+
 	scene = CreateDefaultSubobject<USceneComponent>(TEXT("scene"));
-	scene->SetupAttachment(RootComponent);
+	scene->SetupAttachment(RightHand);
+
+	WidgetInteractionComp = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("WidgetInteractionComp"));
+	WidgetInteractionComp->SetupAttachment(RightAim);
 
 	// Crouch 설정켜기
 	GetMovementComponent()->GetNavAgentPropertiesRef().bCanCrouch = true;
@@ -96,6 +118,12 @@ void ALSCharacter::BeginPlay()
 	ItemArray.SetNum(4);
 	Super::BeginPlay();
 	GM = Cast<ALSGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+
+	if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
+	{
+		UHeadMountedDisplayFunctionLibrary::SetTrackingOrigin(EHMDTrackingOrigin::View);
+		//UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition(180);
+	}
 }
 
 // Called every frame
@@ -133,6 +161,7 @@ void ALSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		if(UEnhancedInputLocalPlayerSubsystem* ss = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
 		{
 			ss->AddMappingContext(IMC_LS, 1);
+			ss->AddMappingContext(IMC_Hand, 1);
 		}
 	}
 
@@ -153,6 +182,7 @@ void ALSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		InputSys->BindAction(IA_Throw, ETriggerEvent::Started, this, &ALSCharacter::Throw);
 		InputSys->BindAction(IA_ChangeItem, ETriggerEvent::Triggered, this, &ALSCharacter::ChangeItem);
 		InputSys->BindAction(IA_UseItem, ETriggerEvent::Started, this, &ALSCharacter::Use);
+		InputSys->BindAction(IA_UseItem, ETriggerEvent::Completed, this, &ALSCharacter::ReleaseUI);
 		InputSys->BindAction(IA_Scan, ETriggerEvent::Started, this, &ALSCharacter::Scan);
 	}
 }
@@ -171,6 +201,10 @@ void ALSCharacter::ChangeMove()
 
 void ALSCharacter::Turn(const struct FInputActionValue& val)
 {
+	if (bUsingMouse == false)
+	{
+		return;
+	}
 	FVector2D scale = val.Get<FVector2D>();
 	AddControllerPitchInput(scale.Y);
 	AddControllerYawInput(scale.X);
@@ -223,6 +257,14 @@ void ALSCharacter::Interact()
 			if (lever)
 			{
 				lever->InteractLever();
+				break;
+			}
+
+			ADoorActor* door = Cast<ADoorActor>(HitInfo.GetActor());
+			if (door)
+			{
+				door->OpenDoor();
+				break;
 			}
 		}
 			
@@ -266,6 +308,11 @@ void ALSCharacter::SelectItem(int32 index, int32 preIndex)
 
 void ALSCharacter::Use()
 {
+	if (WidgetInteractionComp)
+	{
+		WidgetInteractionComp->PressPointerKey(EKeys::LeftMouseButton);
+	}
+
 	if (ItemArray[SelectedIndex])
 	{
 		ItemArray[SelectedIndex]->UseItem();
@@ -273,12 +320,17 @@ void ALSCharacter::Use()
 	
 }
 
+void ALSCharacter::ReleaseUI()
+{
+	WidgetInteractionComp->ReleasePointerKey(EKeys::LeftMouseButton);
+}
+
 
 
 bool ALSCharacter::drawInteractLine(TArray<FHitResult>& HitInfos)
 {
-	FVector StartPos = VRCamera->GetComponentLocation();
-	FVector EndPos = StartPos + VRCamera->GetForwardVector() * InteractDist;
+	FVector StartPos = RightAim->GetComponentLocation();
+	FVector EndPos = StartPos + RightAim->GetForwardVector() * InteractDist;
 	FCollisionQueryParams params;
 	params.AddIgnoredActor(this);
 	for (int i = 0; i < 4; ++i)
@@ -294,13 +346,15 @@ bool ALSCharacter::drawInteractLine(TArray<FHitResult>& HitInfos)
 void ALSCharacter::Die()
 {
 	bIsDead = true;
-	EndGame();
+	ASpaceShipActor* SpaceShip = Cast<ASpaceShipActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ASpaceShipActor::StaticClass()));
 	APlayerController* pc = Cast<APlayerController>(Controller);
-	if (pc)
+	pc->SetViewTarget(SpaceShip);
+	SpaceShip->AfterEnd();
+	/*if (pc)
 	{
 		pc->SetPause(true);
 		pc->bShowMouseCursor = true;
-	}
+	}*/
 }
 
 void ALSCharacter::WalkSound(float loudness)
@@ -338,6 +392,11 @@ void ALSCharacter::Scan()
 	FVector CurPos = GetActorLocation();
 	FCollisionQueryParams params;
 	params.AddIgnoredActor(this);
+	for (int i = 0; i < ItemArray.Num(); ++i)
+	{
+		if (ItemArray[i])
+			params.AddIgnoredActor(ItemArray[i]);
+	}
 	bool bHit = GetWorld()->SweepMultiByChannel(HitInfos, CurPos, CurPos, FQuat::Identity, ECC_Visibility, FCollisionShape::MakeSphere(ScanDist),params);
 	if (bHit)
 	{
@@ -372,4 +431,27 @@ void ALSCharacter::EndGame()
 	GM->SaveGameData();
 
 	UGameplayStatics::OpenLevel(GetWorld(), TEXT("StartMap"));
+}
+
+void ALSCharacter::WinGame()
+{
+	if (!bSucceed)
+	{
+		GetCapsuleComponent()->SetSimulatePhysics(true);
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetCapsuleComponent()->AddImpulse(GetActorRightVector() * -500000);
+
+	}
+	GetWorld()->GetTimerManager().SetTimer(EndingTimer, FTimerDelegate::CreateLambda(
+		[this]()
+		{
+			CurEndingTime += GetWorld()->DeltaTimeSeconds;
+			if (CurScanTime >= EndingTime)
+			{
+				UGameplayStatics::SetGamePaused(GetWorld(), true);
+				GetWorldTimerManager().ClearTimer(EndingTimer);
+				CurEndingTime = 0;
+			}
+		}), 0.02f, true);
+
 }

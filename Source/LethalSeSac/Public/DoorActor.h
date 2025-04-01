@@ -23,9 +23,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bIsOutSide = true;
 
 	void OpenDoor();
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UBoxComponent* BoxComp;
 };

@@ -6,12 +6,15 @@
 #include "Kismet/GameplayStatics.h"
 #include "LeverActor.h"
 #include "SpaceShipActor.h"
+#include "LSCharacter.h"
+
 
 void ALSGameModeBase::BeginPlay()
 {
 	LoadGameData();
 	ALeverActor* Lever = Cast<ALeverActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ALeverActor::StaticClass()));
 	ASpaceShipActor* SpaceShip = Cast<ASpaceShipActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ASpaceShipActor::StaticClass()));
+	ALSCharacter* player = Cast<ALSCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	if (Lever)
 	{
 		Lever->bInSpace = bInSpace;
@@ -25,7 +28,16 @@ void ALSGameModeBase::BeginPlay()
 	{
 		if (GameDay <= 0)
 		{
+			if (Quota > TotValue)
+			{
+				player->bSucceed = false;
+			}
+			else
+			{
+				player->bSucceed = true;
+			}
 			ResetGameData();
+			player->WinGame();
 		}
 	}
 	

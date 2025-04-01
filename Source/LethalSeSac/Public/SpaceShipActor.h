@@ -34,6 +34,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Quota = 200;
 
+	FTimerHandle EndingTimer;
+
+	void AfterEnd();
+
+	float CurTime = 0;
+	float boardTime = 7;
+
 	UFUNCTION()
 	void OnSpaceShipOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,	bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
