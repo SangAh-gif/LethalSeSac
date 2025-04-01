@@ -438,15 +438,16 @@ void ALSCharacter::WinGame()
 	if (!bSucceed)
 	{
 		GetCapsuleComponent()->SetSimulatePhysics(true);
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetCharacterMovement()->GravityScale = 0;
 		GetCapsuleComponent()->AddImpulse(GetActorRightVector() * -500000);
+		//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	}
 	GetWorld()->GetTimerManager().SetTimer(EndingTimer, FTimerDelegate::CreateLambda(
 		[this]()
 		{
 			CurEndingTime += GetWorld()->DeltaTimeSeconds;
-			if (CurScanTime >= EndingTime)
+			if (CurEndingTime >= EndingTime)
 			{
 				UGameplayStatics::SetGamePaused(GetWorld(), true);
 				GetWorldTimerManager().ClearTimer(EndingTimer);
