@@ -61,6 +61,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = FSM)
 	float currentTime = 0.0f;
 
+	UPROPERTY(EditDefaultsOnly, Category = FSM)
+	float SoundDelayTime = 5.0f;
+
+
 	UPROPERTY(EditAnywhere, Category =FSM)
 	float attackDelayTime = 0.5f;
 
@@ -100,5 +104,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = Sound )
 	class USoundBase* CoilHeadMoveSound;
+
+	void OnSound();
 
 };

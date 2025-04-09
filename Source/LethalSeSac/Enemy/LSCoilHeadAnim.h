@@ -24,4 +24,10 @@ public:
 
 public:
 	bool bAttackPlay = false;
+
+	UFUNCTION()
+	void AnimNotify_OnSound();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category =FSM)
+	class UAnimMontage* MoveMontage;
 };
