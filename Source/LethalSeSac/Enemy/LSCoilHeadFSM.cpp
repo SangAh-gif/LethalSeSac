@@ -25,9 +25,9 @@ ULSCoilHeadFSM::ULSCoilHeadFSM()
 	// ...1
 	ConstructorHelpers::FObjectFinder<USoundBase> TempCoilSound(TEXT("/Script/Engine.SoundCue'/Game/SSA/Sound/CoilHead_Cue.CoilHead_Cue'"));
 	if (TempCoilSound.Succeeded())
-		CoilHeadStopSound = TempCoilSound.Object;
+		CoilHeadMoveSound = TempCoilSound.Object;
 	
-	ConstructorHelpers::FObjectFinder<USoundBase> TempCoilStopSound(TEXT("/Script/Engine.SoundCue'/Game/SSA/Sound/Coil_Cue.Coil_Cue'"));
+	ConstructorHelpers::FObjectFinder<USoundBase> TempCoilStopSound(TEXT("/Script/Engine.SoundWave'/Game/SSA/Sound/CoilHead__cut_0sec_.CoilHead__cut_0sec_'"));
 	if (TempCoilSound.Succeeded())
 		CoilHeadStopSound = TempCoilStopSound.Object;
 }
@@ -61,10 +61,6 @@ void ULSCoilHeadFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
-
-	FString logMsg = UEnum::GetValueAsString(mState);
-	GEngine->AddOnScreenDebugMessage(0, 1, FColor::Blue, logMsg);
-
 	bIsPlayerLooking = ai->IsPlayerLookAtMe();
 
 	if (me->GetMesh()->UPrimitiveComponent::WasRecentlyRendered())
@@ -152,18 +148,6 @@ void ULSCoilHeadFSM::MoveState()
 		}
 	}
 
-	//if (dir.Size() < attackRange) // 공격 반경에 들어오면 
-	//{
-	//	ai->StopMovement(); // 움직임을 멈추고 
-
-	//	mState = ECoilHeadState::Attack; // 공격을 한다
-
-	//	Anim->AnimState = mState; // 블프와 연ㄱ동
-
-	//	Anim->bAttackPlay = true;
-
-	//	currentTime = attackDelayTime; // 리셋 
-	//}
 }
 
 void ULSCoilHeadFSM::PatrolState()
@@ -192,7 +176,8 @@ void ULSCoilHeadFSM::LookAtMeState()
 		me->GetCharacterMovement()->StopMovementImmediately();
 		me->bUseControllerRotationYaw = false;
 		//mState = ECoilHeadState::Idle;
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), CoilHeadStopSound, me->GetActorLocation());
+
+		
 	}
 	else
 	{
@@ -200,6 +185,14 @@ void ULSCoilHeadFSM::LookAtMeState()
 		ai->MoveToLocation(target->GetActorLocation());
 		me->bUseControllerRotationYaw = true;
 		//UGameplayStatics::PlaySoundAtLocation(GetWorld(), CoilHeadMoveSound, me->GetActorLocation());
+		me->PlayAnimMontage(Anim->MoveMontage);
+		if (currentTime > SoundDelayTime)
+		{
+
+			//UGameplayStatics::PlaySoundAtLocation(GetWorld(), CoilHeadStopSound, me->GetActorLocation());
+
+			currentTime = SoundDelayTime;
+		}
 	}
 }
 
@@ -213,5 +206,10 @@ bool ULSCoilHeadFSM::GetRandomPositionInNavMesh(FVector centerLocation, float ra
 	dest = loc.Location;
 
 	return result;
+}
+
+void ULSCoilHeadFSM::OnSound()
+{
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), CoilHeadStopSound, me->GetActorLocation());
 }
 

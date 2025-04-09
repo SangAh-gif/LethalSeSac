@@ -188,6 +188,8 @@ void ULSDogFSM::AttackState()
 		if (currentTime > SoundDelayTime)
 		{
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), DogAttackSound, me->GetActorLocation());
+
+			currentTime = SoundDelayTime;
 		}
 	}
 	else

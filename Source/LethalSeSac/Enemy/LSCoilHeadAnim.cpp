@@ -8,3 +8,11 @@ ULSCoilHeadAnim::ULSCoilHeadAnim()
 {
 
 }
+
+void ULSCoilHeadAnim::AnimNotify_OnSound()
+{
+	if (ALSCoilHead* CoilHead = Cast<ALSCoilHead>(TryGetPawnOwner()))
+	{
+		CoilHead->FSM->OnSound();
+	}
+}
